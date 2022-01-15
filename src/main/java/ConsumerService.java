@@ -2,12 +2,13 @@ import io.confluent.parallelconsumer.ParallelConsumerOptions;
 import io.confluent.parallelconsumer.ParallelStreamProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
 
 import static io.confluent.parallelconsumer.ParallelConsumerOptions.ProcessingOrder.UNORDERED;
 
@@ -46,6 +47,7 @@ public class ConsumerService {
                 .maxConcurrency(10)
                 .consumer(kafkaConsumer)
                 .producer(kafkaProducer)
+                .batchSize(5)
                 .build();
 
         ParallelStreamProcessor<String, String> parallelStreamProcessor = ParallelStreamProcessor
@@ -57,19 +59,17 @@ public class ConsumerService {
     }
 
     public void startConfluentParallelConsumer() {
-        Random r = new Random();
         ParallelStreamProcessor<String, String> parallelConsumer = setupParallelConsumer();
-        parallelConsumer.poll(record -> {
-            log.info("{}, {}, {}, {}", record.offset(), new Date(record.timestamp()), new Date(), record.serializedValueSize());
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            // if(record.offset() % 2 == 0) { throw new RuntimeException("Processing of record failed!"); }
-        });
-
-
+        parallelConsumer.pollBatch(recordList ->
+            recordList.forEach(record -> {
+                log.info("{}, {}, {}, {}", record.offset(), new Date(record.timestamp()), new Date(), record.serializedValueSize());
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            })
+        );
     }
 
 }
