@@ -6,11 +6,11 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.confluent.parallelconsumer.ParallelConsumerOptions.ProcessingOrder.UNORDERED;
+import static io.confluent.parallelconsumer.ParallelConsumerOptions.ProcessingOrder.*;
 
 @Slf4j
 public class ConsumerService {
@@ -37,17 +37,16 @@ public class ConsumerService {
         return new KafkaProducer<>(producerProperties);
     }
 
-
     private ParallelStreamProcessor<String, String> setupParallelConsumer() {
         Consumer<String, String> kafkaConsumer = getKafkaConsumer();
         Producer<String, String> kafkaProducer = getKafkaProducer();
 
         ParallelConsumerOptions<String, String> consumerOptions = ParallelConsumerOptions.<String, String>builder()
                 .ordering(UNORDERED)
-                .maxConcurrency(10)
                 .consumer(kafkaConsumer)
                 .producer(kafkaProducer)
-                .batchSize(5)
+                .batchSize(10)
+                .maxConcurrency(12)
                 .build();
 
         ParallelStreamProcessor<String, String> parallelStreamProcessor = ParallelStreamProcessor
@@ -60,16 +59,22 @@ public class ConsumerService {
 
     public void startConfluentParallelConsumer() {
         ParallelStreamProcessor<String, String> parallelConsumer = setupParallelConsumer();
-        parallelConsumer.pollBatch(recordList ->
+        AtomicInteger numBatches = new AtomicInteger();
+        AtomicInteger numRecords = new AtomicInteger();
+        parallelConsumer.pollBatch(recordList -> {
+            numBatches.getAndIncrement();
+            numRecords.addAndGet(recordList.size());
+            log.info("Size of recordList: {}", recordList.size());
+            log.info("average batch size: {}", numRecords.get() / (0.0 + numBatches.get()));
+            try {
+                Thread.sleep(30);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             recordList.forEach(record -> {
-                log.info("{}, {}, {}, {}", record.offset(), new Date(record.timestamp()), new Date(), record.serializedValueSize());
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            })
-        );
+                // log.info("{}, {}, {}, {}", record.offset(), new Date(record.timestamp()), new Date(), record.serializedValueSize());
+            });
+        });
     }
 
 }

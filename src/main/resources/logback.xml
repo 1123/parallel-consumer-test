@@ -20,18 +20,28 @@
         </encoder>
     </appender>
 
-    <root level="warn">
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>myApp.log</file>
+
+        <encoder>
+            <pattern>%d{mm:ss.SSS} %X{pcId} %highlight(%-5level) %yellow([%thread]) %X{offset} %cyan(\(%file:%line\)#%M) %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="info">
         <!--    <root level="debug">-->
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 
     <!-- primary -->
-    <logger name="io.confluent.parallelconsumer" level="warn"/>
+    <logger name="io.confluent.parallelconsumer" level="debug"/>
     <!--    <logger name="io.confluent.parallelconsumer" level="debug"/>-->
     <!--    <logger name="io.confluent.csid" level="debug"/>-->
     <!--        <logger name="io.confluent.parallelconsumer" level="trace"/>-->
     <!--    <logger name="io.confluent.parallelconsumer" level="error"/>-->
-    <!--            <logger name="io.confluent.parallelconsumer.internal.AbstractParallelEoSStreamProcessor" level="trace"/>-->
+                <logger name="io.confluent.parallelconsumer.internal.AbstractParallelEoSStreamProcessor" level="trace"/>
     <!--                <logger name="io.confluent.parallelconsumer.internal.BrokerPollSystem" level="trace"/>-->
     <!--        <logger name="io.confluent.parallelconsumer.integrationTests.BrokerIntegrationTest" level="info"/> &lt;!&ndash; docker logs &ndash;&gt;-->
     <!--    <logger name="io.confluent.csid" level="info"/>-->
@@ -45,7 +55,7 @@
     <!--    <logger name="io.confluent.parallelconsumer.integrationTests" level="debug"/>-->
     <!--    <logger name="io.confluent.parallelconsumer.integrationTests.LargeVolumeInMemoryTests" level="debug"/>-->
     <!--    <logger name="io.confluent.parallelconsumer.ParallelConsumerTestBase" level="trace"/>-->
-    <!--        <logger name="io.confluent.parallelconsumer.state.WorkManager" level="trace" />-->
+            <logger name="io.confluent.parallelconsumer.state.WorkManager" level="trace" />
     <!--    <logger name="io.confluent.parallelconsumer.ParallelConsumer" level="info" />-->
     <!--    <logger name="io.confluent.parallelconsumer.offsets.OffsetMapCodecManager" level="debug"/>-->
     <!--    <logger name="io.confluent.parallelconsumer.offsets.WorkManagerOffsetMapCodecManagerTest" level="debug"/>-->
