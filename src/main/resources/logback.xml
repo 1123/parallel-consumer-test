@@ -55,7 +55,7 @@
     <!--    <logger name="io.confluent.parallelconsumer.integrationTests" level="debug"/>-->
     <!--    <logger name="io.confluent.parallelconsumer.integrationTests.LargeVolumeInMemoryTests" level="debug"/>-->
     <!--    <logger name="io.confluent.parallelconsumer.ParallelConsumerTestBase" level="trace"/>-->
-            <logger name="io.confluent.parallelconsumer.state.WorkManager" level="trace" />
+    <!--        <logger name="io.confluent.parallelconsumer.state.WorkManager" level="trace" /> -->
     <!--    <logger name="io.confluent.parallelconsumer.ParallelConsumer" level="info" />-->
     <!--    <logger name="io.confluent.parallelconsumer.offsets.OffsetMapCodecManager" level="debug"/>-->
     <!--    <logger name="io.confluent.parallelconsumer.offsets.WorkManagerOffsetMapCodecManagerTest" level="debug"/>-->

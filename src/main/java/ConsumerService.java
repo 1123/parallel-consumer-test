@@ -46,6 +46,8 @@ public class ConsumerService {
                 .consumer(kafkaConsumer)
                 .producer(kafkaProducer)
                 .batchSize(10)
+                .processorDelayMs(30)
+                .initialDynamicLoadFactor(10)
                 .maxConcurrency(12)
                 .build();
 
